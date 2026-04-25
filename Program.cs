@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using PlataformaCreditos.Data;
 using PlataformaCreditos.Models;
 
@@ -20,10 +21,25 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "localhost:6379,abortConnect=false";
+});
+
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
-
 
 
 using (var scope = app.Services.CreateScope())
@@ -34,11 +50,13 @@ using (var scope = app.Services.CreateScope())
     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
+    
     if (!await roleManager.RoleExistsAsync("Analista"))
     {
         await roleManager.CreateAsync(new IdentityRole("Analista"));
     }
 
+    
     var email = "analista@demo.com";
     var user = await userManager.FindByEmailAsync(email);
 
@@ -54,6 +72,7 @@ using (var scope = app.Services.CreateScope())
         await userManager.AddToRoleAsync(user, "Analista");
     }
 
+   
     if (!context.Clientes.Any())
     {
         var cliente1 = new Cliente
@@ -110,11 +129,15 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+
+app.UseSession();
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Solicitudes}/{action=Index}/{id?}");
 
 app.MapRazorPages();
 
