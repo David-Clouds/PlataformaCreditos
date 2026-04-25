@@ -1,0 +1,42 @@
+@model IEnumerable<PlataformaCreditos.Models.SolicitudCredito>
+
+<h2 class="mb-4">📄 Mis Solicitudes</h2>
+
+<a class="btn btn-primary mb-3" asp-action="Crear">+ Nueva Solicitud</a>
+
+<table class="table table-striped table-bordered shadow">
+    <thead class="table-dark">
+        <tr>
+            <th>Monto</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>S/ @item.MontoSolicitado</td>
+            <td>@item.FechaSolicitud.ToShortDateString()</td>
+            <td>
+                @if(item.Estado == "Pendiente")
+                {
+                    <span class="badge bg-warning text-dark">Pendiente</span>
+                }
+                else if(item.Estado == "Aprobado")
+                {
+                    <span class="badge bg-success">Aprobado</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Rechazado</span>
+                }
+            </td>
+            <td>
+                <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.Id">Ver</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
