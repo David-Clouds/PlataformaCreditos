@@ -24,7 +24,7 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = builder.Configuration["Redis:ConnectionString"] 
+    options.Configuration = builder.Configuration["Redis:ConnectionString"]
         ?? "localhost:6379,abortConnect=false";
 });
 
@@ -51,6 +51,8 @@ using (var scope = app.Services.CreateScope())
     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
+    await context.Database.MigrateAsync();
+
     if (!await roleManager.RoleExistsAsync("Analista"))
     {
         await roleManager.CreateAsync(new IdentityRole("Analista"));
@@ -64,7 +66,8 @@ using (var scope = app.Services.CreateScope())
         user = new IdentityUser
         {
             UserName = email,
-            Email = email
+            Email = email,
+            EmailConfirmed = true
         };
 
         await userManager.CreateAsync(user, "Admin123!");
