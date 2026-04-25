@@ -1,42 +1,68 @@
 @model IEnumerable<PlataformaCreditos.Models.SolicitudCredito>
 
-<h2 class="mb-4">📄 Mis Solicitudes</h2>
+@{
+    ViewData["Title"] = "Mis Solicitudes";
+}
 
-<a class="btn btn-primary mb-3" asp-action="Crear">+ Nueva Solicitud</a>
+<div class="container mt-5">
 
-<table class="table table-striped table-bordered shadow">
-    <thead class="table-dark">
-        <tr>
-            <th>Monto</th>
-            <th>Fecha</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model)
+    <div class="d-flex justify-content-between mb-4">
+        <h2>📄 Mis Solicitudes</h2>
+
+        <a href="/Solicitudes/Crear" class="btn btn-success">
+            ➕ Nueva Solicitud
+        </a>
+    </div>
+
+    @if (!Model.Any())
     {
-        <tr>
-            <td>S/ @item.MontoSolicitado</td>
-            <td>@item.FechaSolicitud.ToShortDateString()</td>
-            <td>
-                @if(item.Estado == "Pendiente")
-                {
-                    <span class="badge bg-warning text-dark">Pendiente</span>
-                }
-                else if(item.Estado == "Aprobado")
-                {
-                    <span class="badge bg-success">Aprobado</span>
-                }
-                else
-                {
-                    <span class="badge bg-danger">Rechazado</span>
-                }
-            </td>
-            <td>
-                <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.Id">Ver</a>
-            </td>
-        </tr>
+        <div class="alert alert-info text-center">
+            No tienes solicitudes registradas.
+        </div>
     }
-    </tbody>
-</table>
+    else
+    {
+        <table class="table table-bordered table-hover shadow">
+            <thead class="table-dark">
+                <tr>
+                    <th>Monto</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td>S/ @s.MontoSolicitado</td>
+                        <td>@s.FechaSolicitud.ToShortDateString()</td>
+
+                        <td>
+                            @if (s.Estado == "Pendiente")
+                            {
+                                <span class="badge bg-warning text-dark">Pendiente</span>
+                            }
+                            else if (s.Estado == "Aprobado")
+                            {
+                                <span class="badge bg-success">Aprobado</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Rechazado</span>
+                            }
+                        </td>
+
+                        <td>
+                            <a href="/Solicitudes/Detalle/@s.Id" class="btn btn-primary btn-sm">
+                                Ver
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+</div>
