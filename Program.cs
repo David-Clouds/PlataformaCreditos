@@ -5,7 +5,6 @@ using PlataformaCreditos.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string not found");
 
@@ -13,7 +12,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     options.SignIn.RequireConfirmedAccount = false)
@@ -23,8 +21,6 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
-
-
 
 using (var scope = app.Services.CreateScope())
 {
@@ -51,6 +47,10 @@ using (var scope = app.Services.CreateScope())
         };
 
         await userManager.CreateAsync(user, "Admin123!");
+    }
+
+    if (!await userManager.IsInRoleAsync(user, "Analista"))
+    {
         await userManager.AddToRoleAsync(user, "Analista");
     }
 
@@ -94,7 +94,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -110,6 +109,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
