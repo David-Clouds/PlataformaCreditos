@@ -6,31 +6,27 @@ using PlataformaCreditos.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string not found");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-    options.SignIn.RequireConfirmedAccount = false)
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = "localhost:6379,abortConnect=false";
+    options.Configuration = builder.Configuration["Redis:ConnectionString"]
+        ?? "localhost:6379,abortConnect=false";
 });
-
 
 builder.Services.AddSession(options =>
 {
@@ -41,6 +37,11 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
+var port = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrEmpty(port))
+{
+    app.Urls.Add($"http://0.0.0.0:{port}");
+}
 
 using (var scope = app.Services.CreateScope())
 {
@@ -50,13 +51,13 @@ using (var scope = app.Services.CreateScope())
     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-    
+    await context.Database.MigrateAsync();
+
     if (!await roleManager.RoleExistsAsync("Analista"))
     {
         await roleManager.CreateAsync(new IdentityRole("Analista"));
     }
 
-    
     var email = "analista@demo.com";
     var user = await userManager.FindByEmailAsync(email);
 
@@ -65,14 +66,18 @@ using (var scope = app.Services.CreateScope())
         user = new IdentityUser
         {
             UserName = email,
-            Email = email
+            Email = email,
+            EmailConfirmed = true
         };
 
         await userManager.CreateAsync(user, "Admin123!");
+    }
+
+    if (!await userManager.IsInRoleAsync(user, "Analista"))
+    {
         await userManager.AddToRoleAsync(user, "Analista");
     }
 
-   
     if (!context.Clientes.Any())
     {
         var cliente1 = new Cliente
@@ -113,7 +118,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -129,11 +133,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.MapControllerRoute(
     name: "default",

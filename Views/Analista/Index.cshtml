@@ -1,0 +1,43 @@
+@model List<PlataformaCreditos.Models.SolicitudCredito>
+
+<h2>Panel Analista</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (TempData["Ok"] != null)
+{
+    <div class="alert alert-success">@TempData["Ok"]</div>
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Monto</th>
+            <th>Cliente</th>
+            <th>Ingresos</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var s in Model)
+{
+    <tr>
+        <td>@s.MontoSolicitado</td>
+        <td>@s.Cliente.UsuarioId</td>
+        <td>@s.Cliente.IngresosMensuales</td>
+        <td>
+            <a href="/Analista/Aprobar/@s.Id" class="btn btn-success">
+                Aprobar
+            </a>
+
+            <a href="/Analista/Rechazar/@s.Id" class="btn btn-danger">
+                Rechazar
+            </a>
+        </td>
+    </tr>
+}
+    </tbody>
+</table>
