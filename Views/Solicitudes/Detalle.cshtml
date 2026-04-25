@@ -1,0 +1,16 @@
+@model PlataformaCreditos.Models.SolicitudCredito
+
+<h2 class="mb-4"> Detalle de Solicitud</h2>
+
+<div class="card shadow p-4">
+    <p><strong>Monto:</strong> S/ @Model.MontoSolicitado</p>
+    <p><strong>Fecha:</strong> @Model.FechaSolicitud</p>
+    <p><strong>Estado:</strong> @Model.Estado</p>
+
+    @if(Model.Estado == "Rechazado")
+    {
+        <p class="text-danger"><strong>Motivo:</strong> @Model.MotivoRechazo</p>
+    }
+</div>
+
+<a class="btn btn-secondary mt-3" asp-action="Index">Volver</a>

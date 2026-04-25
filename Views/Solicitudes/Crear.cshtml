@@ -1,0 +1,25 @@
+@model PlataformaCreditos.Models.SolicitudCredito
+
+<h2 class="mb-4">💰 Nueva Solicitud</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (TempData["Ok"] != null)
+{
+    <div class="alert alert-success">@TempData["Ok"]</div>
+}
+
+<form asp-action="Crear" method="post" class="card p-4 shadow">
+    
+    <div class="mb-3">
+        <label class="form-label">Monto solicitado</label>
+        <input asp-for="MontoSolicitado" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Enviar Solicitud</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+
+</form>
