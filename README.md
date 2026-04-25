@@ -37,13 +37,13 @@ https://github.com/David-Clouds/PlataformaCreditos
 - Registro e inicio de sesión
 - Registro de solicitudes de crédito
 
-#### Validaciones de negocio:
+####  Validaciones de negocio:
 
 - No monto negativo
 - No más de una solicitud pendiente
 - Monto ≤ 10 veces ingresos
 
-#### Catálogo:
+####  Catálogo:
 
 - Listado de solicitudes
 - Filtros por:
@@ -69,9 +69,71 @@ https://github.com/David-Clouds/PlataformaCreditos
 - Aprobar solicitudes
 - Rechazar solicitudes con motivo obligatorio
 
-#### Validaciones:
+####  Validaciones:
 
 - No aprobar si monto > 5x ingresos
 - No procesar solicitudes ya resueltas
 
 ---
+
+##  Credenciales de prueba
+
+Correo: analista@demo.com  
+Contraseña: Admin123!
+
+---
+
+##  Pruebas realizadas
+
+- Login de usuario
+- Registro de solicitud
+- Validaciones de formulario
+- Restricción de solicitud pendiente
+- Filtros de búsqueda
+- Detalle de solicitud
+- Sesión de última solicitud
+- Cache funcionando correctamente
+- Panel de analista
+- Aprobación y rechazo
+- Despliegue en Render
+
+---
+
+##  Variables de entorno (Render)
+ASPNETCORE_ENVIRONMENT=Production
+ASPNETCORE_URLS=http://0.0.0.0:${PORT}
+
+ConnectionStrings__DefaultConnection=Data Source=app.db
+Redis__ConnectionString=TU_URL_DE_REDIS
+
+
+---
+
+##  Explicación de variables
+
+- **ASPNETCORE_ENVIRONMENT** → Define el entorno de ejecución
+- **ASPNETCORE_URLS** → Puerto requerido por Render
+- **ConnectionStrings__DefaultConnection** → Base de datos SQLite
+- **Redis__ConnectionString** → Conexión a Redis (KeyValue)
+
+---
+
+##  Redis
+
+- En desarrollo local: usa `DistributedMemoryCache`
+- En producción: usa Redis (Render KeyValue)
+
+---
+
+##  Docker
+
+El despliegue se realiza mediante un `Dockerfile` ubicado en la raíz del proyecto.
+
+---
+
+##  Notas finales
+
+- El sistema cumple con todas las reglas de negocio del caso
+- Se implementó arquitectura MVC correctamente
+- Se integró autenticación, roles, sesión y cache distribuido
+- Se realizó despliegue en producción con Docker y Render
