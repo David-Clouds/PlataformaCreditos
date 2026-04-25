@@ -2,7 +2,6 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY . .
-
 RUN dotnet restore PlataformaCreditos.csproj
 RUN dotnet publish PlataformaCreditos.csproj -c Release -o /app
 
