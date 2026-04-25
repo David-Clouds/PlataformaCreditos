@@ -12,8 +12,6 @@
 <body>
 
 <header>
-
-   
     <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom shadow-sm">
         <div class="container-fluid">
 
@@ -36,16 +34,15 @@
                     </li>
                 </ul>
 
-                <!-- 🔥 SESSION -->
                 @{
                     var ultima = Context.Session.GetString("ultima_solicitud");
                 }
 
-                @if (ultima != null)
+                @if (User.Identity != null && User.Identity.IsAuthenticated && ultima != null)
                 {
-                    <span class="badge bg-warning text-dark me-3">
+                    <a href="/Solicitudes" class="badge bg-warning text-dark me-3 text-decoration-none">
                         🕒 Última solicitud: @ultima
-                    </span>
+                    </a>
                 }
 
                 <partial name="_LoginPartial" />
@@ -54,7 +51,6 @@
         </div>
     </nav>
 
-    <!-- NAV SECUNDARIO -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
 
@@ -62,17 +58,19 @@
 
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Solicitudes" asp-action="Index">
-                            Mis Solicitudes
-                        </a>
-                    </li>
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Solicitudes" asp-action="Index">
+                                Mis Solicitudes
+                            </a>
+                        </li>
+                    }
                 </ul>
             </div>
 
         </div>
     </nav>
-
 </header>
 
 <div class="container">
