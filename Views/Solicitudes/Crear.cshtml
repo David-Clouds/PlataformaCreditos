@@ -1,25 +1,46 @@
-@model PlataformaCreditos.Models.SolicitudCredito
-
-<h2 class="mb-4">💰 Nueva Solicitud</h2>
-
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
+@{
+    ViewData["Title"] = "Nueva Solicitud";
 }
 
-@if (TempData["Ok"] != null)
-{
-    <div class="alert alert-success">@TempData["Ok"]</div>
-}
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h4>💳 Nueva Solicitud de Crédito</h4>
+        </div>
 
-<form asp-action="Crear" method="post" class="card p-4 shadow">
-    
-    <div class="mb-3">
-        <label class="form-label">Monto solicitado</label>
-        <input asp-for="MontoSolicitado" class="form-control" />
+        <div class="card-body">
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger text-center">
+                    ❌ @TempData["Error"]
+                </div>
+            }
+
+            @if (TempData["Ok"] != null)
+            {
+                <div class="alert alert-success text-center">
+                    ✅ @TempData["Ok"]
+                </div>
+            }
+
+            <form method="post">
+                <div class="mb-3">
+                    <label class="form-label">Monto solicitado</label>
+                    <input type="number" name="monto" class="form-control" placeholder="Ej: 1500" required />
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="/Solicitudes" class="btn btn-secondary">
+                        ⬅ Volver
+                    </a>
+
+                    <button class="btn btn-success">
+                         Enviar Solicitud
+                    </button>
+                </div>
+            </form>
+
+        </div>
     </div>
-
-    <button type="submit" class="btn btn-success">Enviar Solicitud</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-
-</form>
+</div>

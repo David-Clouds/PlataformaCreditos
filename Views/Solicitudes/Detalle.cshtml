@@ -1,16 +1,48 @@
 @model PlataformaCreditos.Models.SolicitudCredito
 
-<h2 class="mb-4"> Detalle de Solicitud</h2>
+@{
+    ViewData["Title"] = "Detalle";
+}
 
-<div class="card shadow p-4">
-    <p><strong>Monto:</strong> S/ @Model.MontoSolicitado</p>
-    <p><strong>Fecha:</strong> @Model.FechaSolicitud</p>
-    <p><strong>Estado:</strong> @Model.Estado</p>
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white">
+            <h4>📌 Detalle de Solicitud</h4>
+        </div>
 
-    @if(Model.Estado == "Rechazado")
-    {
-        <p class="text-danger"><strong>Motivo:</strong> @Model.MotivoRechazo</p>
-    }
+        <div class="card-body">
+
+            <p><strong>Monto:</strong> S/ @Model.MontoSolicitado</p>
+            <p><strong>Fecha:</strong> @Model.FechaSolicitud</p>
+
+            <p>
+                <strong>Estado:</strong>
+
+                @if (Model.Estado == "Pendiente")
+                {
+                    <span class="badge bg-warning text-dark">Pendiente</span>
+                }
+                else if (Model.Estado == "Aprobado")
+                {
+                    <span class="badge bg-success">Aprobado</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Rechazado</span>
+                }
+            </p>
+
+            @if (Model.MotivoRechazo != null)
+            {
+                <div class="alert alert-danger">
+                    Motivo: @Model.MotivoRechazo
+                </div>
+            }
+
+            <a href="/Solicitudes" class="btn btn-secondary mt-3">
+                ⬅ Volver
+            </a>
+
+        </div>
+    </div>
 </div>
-
-<a class="btn btn-secondary mt-3" asp-action="Index">Volver</a>
