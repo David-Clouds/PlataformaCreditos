@@ -51,7 +51,7 @@ using (var scope = app.Services.CreateScope())
     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-    await context.Database.MigrateAsync();
+    await context.Database.EnsureCreatedAsync();
 
     if (!await roleManager.RoleExistsAsync("Analista"))
     {
