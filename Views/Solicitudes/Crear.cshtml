@@ -5,28 +5,28 @@
 <div class="container mt-5">
     <div class="card shadow-lg">
         <div class="card-header bg-primary text-white">
-            <h4>💳 Nueva Solicitud de Crédito</h4>
+            <h4 class="mb-0">💳 Nueva Solicitud de Crédito</h4>
         </div>
 
         <div class="card-body">
 
             @if (TempData["Error"] != null)
             {
-                <div class="alert alert-danger text-center">
+                <div class="alert alert-danger text-center shadow-sm">
                     ❌ @TempData["Error"]
                 </div>
             }
 
             @if (TempData["Ok"] != null)
             {
-                <div class="alert alert-success text-center">
+                <div class="alert alert-success text-center shadow-sm">
                     ✅ @TempData["Ok"]
                 </div>
             }
 
             <form method="post">
                 <div class="mb-3">
-                    <label class="form-label">Monto solicitado</label>
+                    <label class="form-label fw-bold">Monto solicitado</label>
                     <input type="number" name="monto" class="form-control" placeholder="Ej: 1500" required />
                 </div>
 
@@ -35,8 +35,8 @@
                         ⬅ Volver
                     </a>
 
-                    <button class="btn btn-success">
-                         Enviar Solicitud
+                    <button class="btn btn-success shadow">
+                        🚀 Enviar Solicitud
                     </button>
                 </div>
             </form>

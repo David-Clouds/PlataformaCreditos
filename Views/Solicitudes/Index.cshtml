@@ -6,63 +6,70 @@
 
 <div class="container mt-5">
 
-    <div class="d-flex justify-content-between mb-4">
-        <h2>📄 Mis Solicitudes</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">📄 Mis Solicitudes</h2>
 
-        <a href="/Solicitudes/Crear" class="btn btn-success">
+        <a href="/Solicitudes/Crear" class="btn btn-success shadow">
             ➕ Nueva Solicitud
         </a>
     </div>
 
     @if (!Model.Any())
     {
-        <div class="alert alert-info text-center">
+        <div class="alert alert-info text-center shadow">
             No tienes solicitudes registradas.
         </div>
     }
     else
     {
-        <table class="table table-bordered table-hover shadow">
-            <thead class="table-dark">
-                <tr>
-                    <th>Monto</th>
-                    <th>Fecha</th>
-                    <th>Estado</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
+        <div class="card shadow">
+            <div class="card-body p-0">
 
-            <tbody>
-                @foreach (var s in Model)
-                {
-                    <tr>
-                        <td>S/ @s.MontoSolicitado</td>
-                        <td>@s.FechaSolicitud.ToShortDateString()</td>
+                <table class="table table-hover table-bordered mb-0 align-middle text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Monto</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
 
-                        <td>
-                            @if (s.Estado == "Pendiente")
-                            {
-                                <span class="badge bg-warning text-dark">Pendiente</span>
-                            }
-                            else if (s.Estado == "Aprobado")
-                            {
-                                <span class="badge bg-success">Aprobado</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-danger">Rechazado</span>
-                            }
-                        </td>
+                    <tbody>
+                        @foreach (var s in Model)
+                        {
+                            <tr>
+                                <td><strong>S/ @s.MontoSolicitado</strong></td>
 
-                        <td>
-                            <a href="/Solicitudes/Detalle/@s.Id" class="btn btn-primary btn-sm">
-                                Ver
-                            </a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                                <td>@s.FechaSolicitud.ToShortDateString()</td>
+
+                                <td>
+                                    @if (s.Estado == "Pendiente")
+                                    {
+                                        <span class="badge bg-warning text-dark px-3 py-2">Pendiente</span>
+                                    }
+                                    else if (s.Estado == "Aprobado")
+                                    {
+                                        <span class="badge bg-success px-3 py-2">Aprobado</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger px-3 py-2">Rechazado</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <a href="/Solicitudes/Detalle/@s.Id" class="btn btn-primary btn-sm shadow-sm">
+                                        👁 Ver
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
     }
 
 </div>

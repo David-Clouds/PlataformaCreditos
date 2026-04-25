@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Distributed;
 using PlataformaCreditos.Data;
 using PlataformaCreditos.Models;
 
@@ -12,29 +13,65 @@ namespace PlataformaCreditos.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IDistributedCache _cache;
 
-        public SolicitudesController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public SolicitudesController(
+            ApplicationDbContext context,
+            UserManager<IdentityUser> userManager,
+            IDistributedCache cache)
         {
             _context = context;
             _userManager = userManager;
+            _cache = cache;
         }
 
-  
+        
         public async Task<IActionResult> Index()
         {
             var userId = _userManager.GetUserId(User);
+            var cacheKey = $"solicitudes_{userId}";
 
-            var cliente = await _context.Clientes
-                .FirstOrDefaultAsync(c => c.UsuarioId == userId);
+            var cacheData = await _cache.GetStringAsync(cacheKey);
 
-            if (cliente == null)
-                return RedirectToAction("Crear");
+            if (cacheData != null)
+            {
+                var solicitudesCache = System.Text.Json.JsonSerializer
+                    .Deserialize<List<SolicitudCredito>>(cacheData);
+
+                return View(solicitudesCache);
+            }
 
             var solicitudes = await _context.Solicitudes
-                .Where(s => s.ClienteId == cliente.Id)
+                .Include(s => s.Cliente)
+                .Where(s => s.Cliente.UsuarioId == userId)
                 .ToListAsync();
 
+            var data = System.Text.Json.JsonSerializer.Serialize(solicitudes);
+
+            await _cache.SetStringAsync(cacheKey, data,
+                new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60)
+                });
+
             return View(solicitudes);
+        }
+
+        
+        public async Task<IActionResult> Detalle(int id)
+        {
+            var solicitud = await _context.Solicitudes
+                .Include(s => s.Cliente)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (solicitud == null)
+                return NotFound();
+
+            
+            HttpContext.Session.SetString("ultima_solicitud",
+                solicitud.MontoSolicitado.ToString());
+
+            return View(solicitud);
         }
 
         public IActionResult Crear()
@@ -42,7 +79,7 @@ namespace PlataformaCreditos.Controllers
             return View();
         }
 
-    
+      
         [HttpPost]
         public async Task<IActionResult> Crear(decimal monto)
         {
@@ -68,7 +105,7 @@ namespace PlataformaCreditos.Controllers
 
             if (monto > cliente.IngresosMensuales * 10)
             {
-                TempData["Error"] = "Monto excede el límite permitido";
+                TempData["Error"] = "Monto excede el límite";
                 return View();
             }
 
@@ -83,21 +120,13 @@ namespace PlataformaCreditos.Controllers
             _context.Solicitudes.Add(solicitud);
             await _context.SaveChangesAsync();
 
-            TempData["Ok"] = "Solicitud registrada correctamente";
+        
+            var cacheKey = $"solicitudes_{userId}";
+            await _cache.RemoveAsync(cacheKey);
+
+            TempData["Ok"] = "Solicitud registrada";
 
             return RedirectToAction("Index");
-        }
-
-      
-        public async Task<IActionResult> Detalle(int id)
-        {
-            var solicitud = await _context.Solicitudes
-                .FirstOrDefaultAsync(s => s.Id == id);
-
-            if (solicitud == null)
-                return NotFound();
-
-            return View(solicitud);
         }
     }
 }
